@@ -1,61 +1,58 @@
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
- * MAIN CLASS - UseCase2TrainConsistMgmnt
- * * Use Case 2: Add Passenger Bogies to Train
+ * MAIN CLASS - UseCase4TrainConsistMgmnt
+ * * Use Case 4: Maintain Ordered Bogie Consist
  * * Description:
- * This class demonstrates how passenger bogies can be
- * managed dynamically using ArrayList operations.
+ * This class models the physical chaining of train bogies
+ * using LinkedList for ordered operations.
  * * At this stage, the application:
- * - Adds new bogies to the train (Create)
- * - Removes existing bogies (Delete)
- * - Checks for bogie availability (Read)
- * - Displays the final consist
+ * - Adds bogies in sequence
+ * - Inserts bogies at specific positions
+ * - Removes bogies from front and rear
+ * - Displays updated train structure
+ * * This maps positional operations using LinkedList.
  * * @author Developer
- * @version 2.0
+ * @version 4.0
  */
-public class TrainConsistManagementApp{
+public class UseCase4TrainConsistMgmnt {
 
     public static void main(String[] args) {
 
-        // Display Header
         System.out.println("=========================================");
-        System.out.println(" UC2 - Add Passenger Bogies to Train ");
+        System.out.println(" UC4 - Maintain Ordered Bogie Consist ");
         System.out.println("=========================================\n");
 
-        // 1. Create an ArrayList to hold passenger bogies
-        List<String> passengerBogies = new ArrayList<>();
+        // 1. Create a LinkedList
+        // LinkedList maintains insertion order and allows fast head/tail operations
+        LinkedList<String> trainConsist = new LinkedList<>();
 
-        // 2. ---- CREATE (Add bogies) ----
-        // add() attaches a new bogie to the end of the train
-        passengerBogies.add("Sleeper");
-        passengerBogies.add("AC Chair");
-        passengerBogies.add("First Class");
+        // 2. Add bogies in sequence (Building the initial train)
+        trainConsist.add("Engine");
+        trainConsist.add("Sleeper");
+        trainConsist.add("AC");
+        trainConsist.add("Cargo");
+        trainConsist.add("Guard");
 
-        System.out.println("After Adding Bogies:");
-        System.out.println("Passenger Bogies : " + passengerBogies);
-        System.out.println();
+        System.out.println("Initial Train Consist:");
+        System.out.println(trainConsist + "\n");
 
-        // 3. ---- DELETE (Remove bogie) ----
-        // remove() simulates decoupling a specific bogie
-        passengerBogies.remove("AC Chair");
+        // 3. Insert a 'Pantry Car' at position 2 (0-indexed: Engine is 0, Sleeper is 1)
+        // This demonstrates the ability to add a bogie in the middle of the consist
+        trainConsist.add(2, "Pantry Car");
 
-        System.out.println("After Removing 'AC Chair':");
-        System.out.println("Passenger Bogies : " + passengerBogies);
-        System.out.println();
+        System.out.println("After Inserting 'Pantry Car' at position 2:");
+        System.out.println(trainConsist + "\n");
 
-        // 4. ---- READ (Check existence) ----
-        // contains() checks if a specific bogie is currently in the consist
-        System.out.println("Checking if 'Sleeper' exists:");
-        boolean hasSleeper = passengerBogies.contains("Sleeper");
-        System.out.println("Contains Sleeper? : " + hasSleeper);
-        System.out.println();
+        // 4. Remove the first and last bogie
+        // removeFirst() detaches the Engine; removeLast() detaches the Guard coach
+        trainConsist.removeFirst();
+        trainConsist.removeLast();
 
-        // 5. Final Consist Display
-        System.out.println("Final Train Passenger Consist:");
-        System.out.println(passengerBogies);
+        System.out.println("After Removing First and Last Bogie:");
+        System.out.println(trainConsist + "\n");
 
-        System.out.println("\nUC2 operations completed successfully ...");
+        System.out.println("UC4 ordered consist operations completed ...");
     }
 }
