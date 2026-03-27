@@ -3,53 +3,59 @@ import java.util.stream.*;
 
 public class TrainConsistManagementApp {
 
-    // Goods Bogie class
-    static class GoodsBogie {
-        String type;
-        String cargo;
+    static class Bogie {
+        String name;
+        int capacity;
 
-        GoodsBogie(String type, String cargo) {
-            this.type = type;
-            this.cargo = cargo;
+        Bogie(String name, int capacity) {
+            this.name = name;
+            this.capacity = capacity;
         }
     }
 
     public static void main(String[] args) {
 
         System.out.println("=======================================");
-        System.out.println("UC12 - Safety Validation Using Streams");
+        System.out.println("UC13 - Performance Comparison");
         System.out.println("=======================================\n");
 
-        // Create list of goods bogies
-        List<GoodsBogie> bogies = new ArrayList<>();
+        // Create list
+        List<Bogie> bogies = new ArrayList<>();
 
-        bogies.add(new GoodsBogie("Cylindrical", "Petroleum"));
-        bogies.add(new GoodsBogie("Rectangular", "Coal"));
-        bogies.add(new GoodsBogie("Cylindrical", "Petroleum"));
-        bogies.add(new GoodsBogie("Rectangular", "Grain"));
-
-        // Display bogies
-        System.out.println("Goods Bogies:");
-        for (GoodsBogie b : bogies) {
-            System.out.println(b.type + " -> " + b.cargo);
+        // Add many bogies (to see difference)
+        for (int i = 0; i < 10000; i++) {
+            bogies.add(new Bogie("Sleeper", 72));
+            bogies.add(new Bogie("AC Chair", 56));
+            bogies.add(new Bogie("General", 90));
         }
 
-        // SAFETY CHECK using allMatch (IMPORTANT ⭐)
-        boolean isSafe = bogies.stream()
-                .allMatch(b ->
-                        // Rule: Cylindrical → only Petroleum allowed
-                        !b.type.equals("Cylindrical") ||
-                                b.cargo.equals("Petroleum")
-                );
+        // -------- LOOP METHOD --------
+        long startLoop = System.nanoTime();
 
-        // Output result
-        System.out.println("\nSafety Check Result:");
-        if (isSafe) {
-            System.out.println("Train is SAFE ✅");
-        } else {
-            System.out.println("Train is NOT SAFE ❌");
+        List<Bogie> loopResult = new ArrayList<>();
+        for (Bogie b : bogies) {
+            if (b.capacity > 60) {
+                loopResult.add(b);
+            }
         }
 
-        System.out.println("\nUC12 validation completed...");
+        long endLoop = System.nanoTime();
+        long loopTime = endLoop - startLoop;
+
+        // -------- STREAM METHOD --------
+        long startStream = System.nanoTime();
+
+        List<Bogie> streamResult = bogies.stream()
+                .filter(b -> b.capacity > 60)
+                .collect(Collectors.toList());
+
+        long endStream = System.nanoTime();
+        long streamTime = endStream - startStream;
+
+        // Output
+        System.out.println("Loop Time (nanoseconds): " + loopTime);
+        System.out.println("Stream Time (nanoseconds): " + streamTime);
+
+        System.out.println("\nUC13 performance comparison completed...");
     }
 }
