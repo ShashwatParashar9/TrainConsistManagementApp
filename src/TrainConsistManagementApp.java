@@ -1,73 +1,68 @@
-import java.util.Arrays;
-
 /**
- * UC17: Sorting Bogie Names Using Arrays.sort()
- * This program demonstrates the transition from manual sorting algorithms
- * to optimized built-in Java utility methods.
+ * UC18: Linear Search for Bogie ID
+ * This program demonstrates sequential searching through an array of bogie IDs.
+ * It handles both sorted and unsorted data by checking each element one by one.
  */
 public class TrainConsistManagementApp {
 
     public static void main(String[] args) {
-        System.out.println("=== Railway Consist Management System: UC17 ===");
+        System.out.println("=== Railway Consist Management System: UC18 ===");
 
-        // Step 1: Initialize an array of Bogie Type Names
-        // These represent different classes available in the train system.
-        String[] bogieNames = {
-                "Sleeper",
-                "AC Chair",
-                "First Class",
-                "General",
-                "Luxury"
-        };
+        // Step 1: Initialize an array of Bogie IDs
+        // Linear search does not require the data to be sorted.
+        String[] bogieInventory = {"BG101", "BG205", "BG309", "BG412", "BG550"};
 
-        // Display original state
-        System.out.println("\n[Original Consist Order]");
-        printBogieArray(bogieNames);
+        // Define search targets based on Test Case Examples
+        String searchTarget1 = "BG309"; // Mid-element match
+        String searchTarget2 = "BG999"; // Not found case
+        String searchTarget3 = "BG101"; // First element match
+        String searchTarget4 = "BG550"; // Last element match
 
-        // Step 2: Use Java's Built-in Arrays.sort()
-        // This performs an optimized natural order (alphabetical) sort.
-        Arrays.sort(bogieNames);
+        // Step 2: Perform search operations
+        System.out.println("\n--- Starting Search Operations ---");
 
-        // Step 3: Display Sorted Result
-        // We use Arrays.toString() for a clean, concise output.
-        System.out.println("\n[Sorted Consist Order (Alphabetical)]");
-        System.out.println(Arrays.toString(bogieNames));
+        findBogie(bogieInventory, searchTarget1);
+        findBogie(bogieInventory, searchTarget2);
+        findBogie(bogieInventory, searchTarget3);
+        findBogie(bogieInventory, searchTarget4);
 
-        // Testing specialized scenarios
-        runEdgeCaseTests();
+        // Scenario: Single element array test
+        String[] singleBogieArr = {"BG101"};
+        System.out.println("\n--- Single Element Array Test ---");
+        findBogie(singleBogieArr, "BG101");
 
         System.out.println("\n" + "=".repeat(45));
-        System.out.println("System Status: Operational (Optimized Sort Applied).");
+        System.out.println("Search process completed. All systems operational.");
     }
 
     /**
-     * Helper method to simulate various test case scenarios
+     * Linear Search Algorithm implementation.
+     * @param array The list of bogie IDs to search through.
+     * @param searchKey The ID we are looking for.
      */
-    private static void runEdgeCaseTests() {
-        System.out.println("\n--- Running Operational Edge Case Tests ---");
+    public static void findBogie(String[] array, String searchKey) {
+        boolean found = false;
+        int indexFound = -1;
 
-        // Test: Duplicate Names
-        String[] duplicates = {"Sleeper", "AC Chair", "Sleeper", "General"};
-        Arrays.sort(duplicates);
-        System.out.println("Duplicate Check: " + Arrays.toString(duplicates));
+        System.out.print("Searching for " + searchKey + ": ");
 
-        // Test: Single Element
-        String[] single = {"Luxury"};
-        Arrays.sort(single);
-        System.out.println("Single Element Check: " + Arrays.toString(single));
-
-        // Test: Already Sorted
-        String[] sorted = {"AC Chair", "First Class", "General"};
-        Arrays.sort(sorted);
-        System.out.println("Pre-Sorted Check: " + Arrays.toString(sorted));
-    }
-
-    /**
-     * Simple utility to print the array elements
-     */
-    private static void printBogieArray(String[] array) {
+        // Sequential Traversal
         for (int i = 0; i < array.length; i++) {
-            System.out.println((i + 1) + ". " + array[i]);
+            // Equality Comparison using .equals() for String safety
+            if (array[i].equals(searchKey)) {
+                found = true;
+                indexFound = i;
+
+                // EARLY TERMINATION: Match found, stop traversing immediately.
+                break;
+            }
+        }
+
+        // Display results to user
+        if (found) {
+            System.out.println("MATCH FOUND! Bogie " + searchKey + " is at index " + indexFound + ".");
+        } else {
+            System.out.println("NOT FOUND. Bogie " + searchKey + " does not exist in this consist.");
         }
     }
 }
