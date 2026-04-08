@@ -1,68 +1,79 @@
+import java.util.Arrays;
+
 /**
- * UC18: Linear Search for Bogie ID
- * This program demonstrates sequential searching through an array of bogie IDs.
- * It handles both sorted and unsorted data by checking each element one by one.
+ * UC19: Binary Search for Bogie ID (Optimized Searching)
+ * This program demonstrates the Divide-and-Conquer strategy for searching.
+ * Precondition: The array MUST be sorted for Binary Search to function.
  */
 public class TrainConsistManagementApp {
 
     public static void main(String[] args) {
-        System.out.println("=== Railway Consist Management System: UC18 ===");
+        System.out.println("=== Railway Consist Management System: UC19 ===");
 
-        // Step 1: Initialize an array of Bogie IDs
-        // Linear search does not require the data to be sorted.
-        String[] bogieInventory = {"BG101", "BG205", "BG309", "BG412", "BG550"};
+        // Step 1: Initialize Bogie IDs (Note: Unsorted to test the precondition)
+        String[] bogieInventory = {"BG309", "BG101", "BG550", "BG205", "BG412"};
 
-        // Define search targets based on Test Case Examples
-        String searchTarget1 = "BG309"; // Mid-element match
-        String searchTarget2 = "BG999"; // Not found case
-        String searchTarget3 = "BG101"; // First element match
-        String searchTarget4 = "BG550"; // Last element match
+        // Step 2: Pre-process the data
+        // Binary search requires sorted data. We use Arrays.sort() from UC17.
+        System.out.println("System: Sorting bogie IDs to meet Binary Search preconditions...");
+        Arrays.sort(bogieInventory);
+        System.out.println("Sorted Inventory: " + Arrays.toString(bogieInventory));
 
-        // Step 2: Perform search operations
-        System.out.println("\n--- Starting Search Operations ---");
+        // Step 3: Define search targets for Test Cases
+        String targetMid = "BG309";  // Mid-range match
+        String targetFirst = "BG101"; // First element (low end)
+        String targetLast = "BG550";  // Last element (high end)
+        String targetNone = "BG999";  // Not found
 
-        findBogie(bogieInventory, searchTarget1);
-        findBogie(bogieInventory, searchTarget2);
-        findBogie(bogieInventory, searchTarget3);
-        findBogie(bogieInventory, searchTarget4);
+        // Step 4: Execute Binary Search for each scenario
+        performBinarySearch(bogieInventory, targetMid);
+        performBinarySearch(bogieInventory, targetFirst);
+        performBinarySearch(bogieInventory, targetLast);
+        performBinarySearch(bogieInventory, targetNone);
 
-        // Scenario: Single element array test
-        String[] singleBogieArr = {"BG101"};
-        System.out.println("\n--- Single Element Array Test ---");
-        findBogie(singleBogieArr, "BG101");
+        // Step 5: Edge Case - Empty Array
+        System.out.println("\n--- Testing Empty Array Handling ---");
+        performBinarySearch(new String[]{}, "BG101");
 
         System.out.println("\n" + "=".repeat(45));
-        System.out.println("Search process completed. All systems operational.");
+        System.out.println("Optimization Complete: Search operations are now O(log n).");
     }
 
     /**
-     * Linear Search Algorithm implementation.
-     * @param array The list of bogie IDs to search through.
-     * @param searchKey The ID we are looking for.
+     * Binary Search implementation using Divide-and-Conquer logic.
      */
-    public static void findBogie(String[] array, String searchKey) {
-        boolean found = false;
-        int indexFound = -1;
+    public static void performBinarySearch(String[] sortedArray, String searchKey) {
+        System.out.print("\nSearching for [" + searchKey + "]: ");
 
-        System.out.print("Searching for " + searchKey + ": ");
+        int low = 0;
+        int high = sortedArray.length - 1;
+        int foundIndex = -1;
+        int steps = 0;
 
-        // Sequential Traversal
-        for (int i = 0; i < array.length; i++) {
-            // Equality Comparison using .equals() for String safety
-            if (array[i].equals(searchKey)) {
-                found = true;
-                indexFound = i;
+        while (low <= high) {
+            steps++;
+            int mid = low + (high - low) / 2;
 
-                // EARLY TERMINATION: Match found, stop traversing immediately.
-                break;
+            // String comparison using compareTo()
+            // result < 0: searchKey comes before mid
+            // result > 0: searchKey comes after mid
+            // result == 0: match found
+            int comparison = searchKey.compareTo(sortedArray[mid]);
+
+            if (comparison == 0) {
+                foundIndex = mid;
+                break; // Target found
+            } else if (comparison < 0) {
+                high = mid - 1; // Discard right half
+            } else {
+                low = mid + 1;  // Discard left half
             }
         }
 
-        // Display results to user
-        if (found) {
-            System.out.println("MATCH FOUND! Bogie " + searchKey + " is at index " + indexFound + ".");
+        if (foundIndex != -1) {
+            System.out.println("SUCCESS! Found at index " + foundIndex + " (Steps taken: " + steps + ")");
         } else {
-            System.out.println("NOT FOUND. Bogie " + searchKey + " does not exist in this consist.");
+            System.out.println("NOT FOUND. Searched entire range in " + steps + " steps.");
         }
     }
 }
