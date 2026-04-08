@@ -1,79 +1,73 @@
 import java.util.Arrays;
 
 /**
- * UC19: Binary Search for Bogie ID (Optimized Searching)
- * This program demonstrates the Divide-and-Conquer strategy for searching.
- * Precondition: The array MUST be sorted for Binary Search to function.
+ * UC20: Exception Handling During Search Operations
+ * This program demonstrates defensive programming by ensuring the system
+ * is in a valid state (non-empty) before performing search operations.
  */
 public class TrainConsistManagementApp {
 
     public static void main(String[] args) {
-        System.out.println("=== Railway Consist Management System: UC19 ===");
+        System.out.println("=== Railway Consist Management System: UC20 ===");
 
-        // Step 1: Initialize Bogie IDs (Note: Unsorted to test the precondition)
-        String[] bogieInventory = {"BG309", "BG101", "BG550", "BG205", "BG412"};
+        // Scenario 1: Search Allowed When Data Exists
+        String[] activeTrain = {"BG101", "BG205", "BG309"};
+        System.out.println("\n--- Scenario 1: Searching a Populated Train ---");
+        try {
+            boolean found = validateAndSearch(activeTrain, "BG205");
+            System.out.println("Search Result: " + (found ? "Bogie Found" : "Bogie Not Found"));
+        } catch (IllegalStateException e) {
+            System.out.println("CAUGHT: " + e.getMessage());
+        }
 
-        // Step 2: Pre-process the data
-        // Binary search requires sorted data. We use Arrays.sort() from UC17.
-        System.out.println("System: Sorting bogie IDs to meet Binary Search preconditions...");
-        Arrays.sort(bogieInventory);
-        System.out.println("Sorted Inventory: " + Arrays.toString(bogieInventory));
+        // Scenario 2: Exception When Empty Data (The Fail-Fast Scenario)
+        // This simulates a train with no bogies attached to the engine yet.
+        String[] emptyTrain = {};
+        System.out.println("\n--- Scenario 2: Searching an Empty Train ---");
+        try {
+            validateAndSearch(emptyTrain, "BG101");
+        } catch (IllegalStateException e) {
+            // Intercepting the state exception to prevent program crash
+            System.out.println("CAUGHT: " + e.getMessage());
+        }
 
-        // Step 3: Define search targets for Test Cases
-        String targetMid = "BG309";  // Mid-range match
-        String targetFirst = "BG101"; // First element (low end)
-        String targetLast = "BG550";  // Last element (high end)
-        String targetNone = "BG999";  // Not found
-
-        // Step 4: Execute Binary Search for each scenario
-        performBinarySearch(bogieInventory, targetMid);
-        performBinarySearch(bogieInventory, targetFirst);
-        performBinarySearch(bogieInventory, targetLast);
-        performBinarySearch(bogieInventory, targetNone);
-
-        // Step 5: Edge Case - Empty Array
-        System.out.println("\n--- Testing Empty Array Handling ---");
-        performBinarySearch(new String[]{}, "BG101");
+        // Scenario 3: Search Match Not Found After Validation
+        System.out.println("\n--- Scenario 3: Search Key Missing ---");
+        try {
+            boolean found = validateAndSearch(activeTrain, "BG999");
+            System.out.println("Search Result: " + (found ? "Bogie Found" : "Bogie Not Found"));
+        } catch (IllegalStateException e) {
+            System.out.println("CAUGHT: " + e.getMessage());
+        }
 
         System.out.println("\n" + "=".repeat(45));
-        System.out.println("Optimization Complete: Search operations are now O(log n).");
+        System.out.println("Defensive Check Complete: System state validated.");
     }
 
     /**
-     * Binary Search implementation using Divide-and-Conquer logic.
+     * Performs a search but validates the state of the array first.
+     * Demonstrates the Fail-Fast principle by throwing an exception early.
+     * * @param bogies The array of bogie IDs
+     * @param searchKey The ID to find
+     * @return true if found, false otherwise
+     * @throws IllegalStateException if the bogie array is empty
      */
-    public static void performBinarySearch(String[] sortedArray, String searchKey) {
-        System.out.print("\nSearching for [" + searchKey + "]: ");
+    public static boolean validateAndSearch(String[] bogies, String searchKey) {
+        // STEP 1: State Validation (Defensive Programming)
+        // We fail fast here before any search logic executes.
+        if (bogies == null || bogies.length == 0) {
+            throw new IllegalStateException("CRITICAL ERROR: Cannot perform search. The train consist is empty!");
+        }
 
-        int low = 0;
-        int high = sortedArray.length - 1;
-        int foundIndex = -1;
-        int steps = 0;
+        // STEP 2: Logic Execution (Only reached if validation passes)
+        System.out.println("Validation Passed: Scanning " + bogies.length + " bogie(s)...");
 
-        while (low <= high) {
-            steps++;
-            int mid = low + (high - low) / 2;
-
-            // String comparison using compareTo()
-            // result < 0: searchKey comes before mid
-            // result > 0: searchKey comes after mid
-            // result == 0: match found
-            int comparison = searchKey.compareTo(sortedArray[mid]);
-
-            if (comparison == 0) {
-                foundIndex = mid;
-                break; // Target found
-            } else if (comparison < 0) {
-                high = mid - 1; // Discard right half
-            } else {
-                low = mid + 1;  // Discard left half
+        for (String id : bogies) {
+            if (id.equals(searchKey)) {
+                return true; // Match found
             }
         }
 
-        if (foundIndex != -1) {
-            System.out.println("SUCCESS! Found at index " + foundIndex + " (Steps taken: " + steps + ")");
-        } else {
-            System.out.println("NOT FOUND. Searched entire range in " + steps + " steps.");
-        }
+        return false; // Match not found
     }
 }
