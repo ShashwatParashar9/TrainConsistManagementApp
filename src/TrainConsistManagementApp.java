@@ -1,90 +1,90 @@
 /**
- * UC15: Safe Cargo Assignment Using try-catch-finally
- * This program demonstrates structured exception handling in a
- * Train Consist Management context.
+ * UC16: Manual Sorting Using Bubble Sort
+ * This program demonstrates algorithmic thinking by sorting passenger bogie
+ * capacities using a manual comparison-and-swap logic.
  */
 
-// 1. Custom Runtime Exception
-// We use RuntimeException so the safety checks happen dynamically during operation.
-class CargoSafetyException extends RuntimeException {
-    public CargoSafetyException(String message) {
-        super(message);
+class PassengerBogie {
+    private String type;
+    private int capacity;
+
+    public PassengerBogie(String type, int capacity) {
+        this.type = type;
+        this.capacity = capacity;
+    }
+
+    public int getCapacity() {
+        return capacity;
+    }
+
+    @Override
+    public String toString() {
+        return type + " (" + capacity + ")";
     }
 }
 
-// 2. The GoodsBogie class with safety validation logic
-class GoodsBogie {
-    private String bogieId;
-    private String shape; // "Rectangular" or "Cylindrical"
-    private String currentCargo;
+public class TrainConsistManagementApp {
 
-    public GoodsBogie(String bogieId, String shape) {
-        this.bogieId = bogieId;
-        this.shape = shape;
-        this.currentCargo = "Empty";
+    public static void main(String[] args) {
+        System.out.println("=== Railway Consist Management System: UC16 ===");
+
+        // Step 1: Create an array of passenger bogie capacities
+        // Sample data mimicking various classes: Sleeper, AC, etc.
+        int[] capacities = {72, 56, 24, 70, 60};
+
+        System.out.print("Initial Capacities: ");
+        printArray(capacities);
+
+        // Step 2: Execute Bubble Sort
+        bubbleSort(capacities);
+
+        // Step 3: Display Sorted Result
+        System.out.print("Sorted Capacities (Ascending): ");
+        printArray(capacities);
+
+        // Final verification of program stability
+        System.out.println("\nSorting complete. System operational.");
     }
 
     /**
-     * Attempts to assign cargo using a try-catch-finally block.
-     * This prevents the entire train system from crashing if one assignment is invalid.
+     * Implementation of the Bubble Sort Algorithm.
+     * Complexity: O(n²) - Ideal for educational understanding of nested loops.
      */
-    public void assignCargo(String cargoType) {
-        System.out.println("\n>>> Processing Assignment: " + cargoType + " to " + bogieId + " (" + shape + ")");
+    public static void bubbleSort(int[] array) {
+        int n = array.length;
+        boolean swapped;
 
-        try {
-            // STEP 1: Validation Logic
-            // Petroleum is volatile and requires a Cylindrical container for safety.
-            if (shape.equalsIgnoreCase("Rectangular") && cargoType.equalsIgnoreCase("Petroleum")) {
-                throw new CargoSafetyException("CRITICAL SAFETY VIOLATION: Petroleum cannot be stored in Rectangular bogies!");
+        // Outer loop: Number of passes
+        for (int i = 0; i < n - 1; i++) {
+            swapped = false;
+
+            // Inner loop: Compare adjacent elements
+            // The largest element "bubbles" to the end with each pass
+            for (int j = 0; j < n - i - 1; j++) {
+                if (array[j] > array[j + 1]) {
+
+                    // SWAP LOGIC: Use a temporary variable to exchange positions
+                    int temp = array[j];
+                    array[j] = array[j + 1];
+                    array[j + 1] = temp;
+
+                    swapped = true;
+                }
             }
 
-            // STEP 2: Success path
-            this.currentCargo = cargoType;
-            System.out.println("SUCCESS: Cargo '" + cargoType + "' secured in " + bogieId + ".");
-
-        } catch (CargoSafetyException e) {
-            // STEP 3: Handle the failure without crashing the app
-            System.out.println("CAUGHT EXCEPTION: " + e.getMessage());
-            System.out.println("ACTION: Assignment aborted. Bogie " + bogieId + " remains " + currentCargo + ".");
-
-        } finally {
-            // STEP 4: Mandatory execution (Logging/Cleanup)
-            System.out.println("CLEANUP: Safety check protocol finalized for " + bogieId + ".");
+            // Optimization: If no two elements were swapped by inner loop, then break
+            if (!swapped) break;
         }
     }
 
-    public String getStatus() {
-        return "Bogie ID: " + bogieId + " | Shape: " + shape + " | Cargo: " + currentCargo;
-    }
-}
-
-// 3. Main Application Entry Point
-public class TrainConsistManagementApp {
-    public static void main(String[] args) {
-        System.out.println("=== Railway Consist Management System: UC15 ===");
-
-        // Initialize bogies
-        GoodsBogie tankBogie = new GoodsBogie("GB-VOL-01", "Cylindrical");
-        GoodsBogie crateBogie = new GoodsBogie("GB-GEN-02", "Rectangular");
-
-        // --- Scenario 1: Safe Assignment ---
-        // Placing petroleum in a cylindrical bogie is safe.
-        tankBogie.assignCargo("Petroleum");
-
-        // --- Scenario 2: Unsafe Assignment (Handled) ---
-        // Placing petroleum in a rectangular bogie triggers our custom exception.
-        crateBogie.assignCargo("Petroleum");
-
-        // --- Scenario 3: Valid Assignment to Rectangular ---
-        // Placing generic cargo in a rectangular bogie is safe.
-        crateBogie.assignCargo("Electronics");
-
-        // Verify System Stability
-        System.out.println("\n" + "=".repeat(45));
-        System.out.println("FINAL TRAIN CONSIST STATUS:");
-        System.out.println(tankBogie.getStatus());
-        System.out.println(crateBogie.getStatus());
-        System.out.println("=".repeat(45));
-        System.out.println("System Status: Operational (No crashes detected).");
+    /**
+     * Utility method to print array contents
+     */
+    private static void printArray(int[] array) {
+        System.out.print("[ ");
+        for (int i = 0; i < array.length; i++) {
+            System.out.print(array[i] + (i < array.length - 1 ? ", " : " "));
+        }
+        System.out.println("]");
     }
 }
