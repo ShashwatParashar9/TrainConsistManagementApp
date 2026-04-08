@@ -1,77 +1,90 @@
-import java.util.Scanner;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 /**
- * UC11: Train Consist Management App - Regex Validation
- * This file handles format enforcement for Train IDs and Cargo Codes.
+ * UC15: Safe Cargo Assignment Using try-catch-finally
+ * This program demonstrates structured exception handling in a
+ * Train Consist Management context.
  */
+
+// 1. Custom Runtime Exception
+// We use RuntimeException so the safety checks happen dynamically during operation.
+class CargoSafetyException extends RuntimeException {
+    public CargoSafetyException(String message) {
+        super(message);
+    }
+}
+
+// 2. The GoodsBogie class with safety validation logic
+class GoodsBogie {
+    private String bogieId;
+    private String shape; // "Rectangular" or "Cylindrical"
+    private String currentCargo;
+
+    public GoodsBogie(String bogieId, String shape) {
+        this.bogieId = bogieId;
+        this.shape = shape;
+        this.currentCargo = "Empty";
+    }
+
+    /**
+     * Attempts to assign cargo using a try-catch-finally block.
+     * This prevents the entire train system from crashing if one assignment is invalid.
+     */
+    public void assignCargo(String cargoType) {
+        System.out.println("\n>>> Processing Assignment: " + cargoType + " to " + bogieId + " (" + shape + ")");
+
+        try {
+            // STEP 1: Validation Logic
+            // Petroleum is volatile and requires a Cylindrical container for safety.
+            if (shape.equalsIgnoreCase("Rectangular") && cargoType.equalsIgnoreCase("Petroleum")) {
+                throw new CargoSafetyException("CRITICAL SAFETY VIOLATION: Petroleum cannot be stored in Rectangular bogies!");
+            }
+
+            // STEP 2: Success path
+            this.currentCargo = cargoType;
+            System.out.println("SUCCESS: Cargo '" + cargoType + "' secured in " + bogieId + ".");
+
+        } catch (CargoSafetyException e) {
+            // STEP 3: Handle the failure without crashing the app
+            System.out.println("CAUGHT EXCEPTION: " + e.getMessage());
+            System.out.println("ACTION: Assignment aborted. Bogie " + bogieId + " remains " + currentCargo + ".");
+
+        } finally {
+            // STEP 4: Mandatory execution (Logging/Cleanup)
+            System.out.println("CLEANUP: Safety check protocol finalized for " + bogieId + ".");
+        }
+    }
+
+    public String getStatus() {
+        return "Bogie ID: " + bogieId + " | Shape: " + shape + " | Cargo: " + currentCargo;
+    }
+}
+
+// 3. Main Application Entry Point
 public class TrainConsistManagementApp {
-
-    // --- Regex Patterns (Key Concepts) ---
-    // TRN- followed by exactly 4 digits
-    private static final String TRAIN_ID_REGEX = "TRN-\\d{4}";
-
-    // PET- followed by exactly 2 uppercase letters
-    private static final String CARGO_CODE_REGEX = "PET-[A-Z]{2}";
-
-    // Pre-compiling patterns for efficiency (Pattern Class)
-    private static final Pattern trainPattern = Pattern.compile(TRAIN_ID_REGEX);
-    private static final Pattern cargoPattern = Pattern.compile(CARGO_CODE_REGEX);
-
     public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
+        System.out.println("=== Railway Consist Management System: UC15 ===");
 
-        System.out.println("==============================================");
-        System.out.println("   TRAIN CONSIST MANAGEMENT SYSTEM (UC11)    ");
-        System.out.println("      Input Validation using Regex           ");
-        System.out.println("==============================================\n");
+        // Initialize bogies
+        GoodsBogie tankBogie = new GoodsBogie("GB-VOL-01", "Cylindrical");
+        GoodsBogie crateBogie = new GoodsBogie("GB-GEN-02", "Rectangular");
 
-        // 1. Validate Train ID
-        System.out.print("Enter Train ID (Format: TRN-XXXX): ");
-        String trainID = scanner.nextLine();
-        validateAndDisplayTrainID(trainID);
+        // --- Scenario 1: Safe Assignment ---
+        // Placing petroleum in a cylindrical bogie is safe.
+        tankBogie.assignCargo("Petroleum");
 
-        System.out.println("----------------------------------------------");
+        // --- Scenario 2: Unsafe Assignment (Handled) ---
+        // Placing petroleum in a rectangular bogie triggers our custom exception.
+        crateBogie.assignCargo("Petroleum");
 
-        // 2. Validate Cargo Code
-        System.out.print("Enter Cargo Code (Format: PET-XX): ");
-        String cargoCode = scanner.nextLine();
-        validateAndDisplayCargoCode(cargoCode);
+        // --- Scenario 3: Valid Assignment to Rectangular ---
+        // Placing generic cargo in a rectangular bogie is safe.
+        crateBogie.assignCargo("Electronics");
 
-        System.out.println("\n==============================================");
-        System.out.println("Validation Process Complete.");
-
-        scanner.close();
-    }
-
-    /**
-     * Logic for validating Train ID using Matcher Class
-     */
-    private static void validateAndDisplayTrainID(String input) {
-        // Create Matcher object for user input
-        Matcher matcher = trainPattern.matcher(input);
-
-        // Use matches() to verify entire string conforms exactly
-        if (matcher.matches()) {
-            System.out.println("✅ VALID: Train ID '" + input + "' matches the required format.");
-        } else {
-            System.out.println("❌ INVALID: '" + input + "' is not a valid Train ID.");
-            System.out.println("   Requirement: Must start with 'TRN-' followed by exactly 4 digits.");
-        }
-    }
-
-    /**
-     * Logic for validating Cargo Code using Matcher Class
-     */
-    private static void validateAndDisplayCargoCode(String input) {
-        Matcher matcher = cargoPattern.matcher(input);
-
-        if (matcher.matches()) {
-            System.out.println("✅ VALID: Cargo Code '" + input + "' matches the required format.");
-        } else {
-            System.out.println("❌ INVALID: '" + input + "' is not a valid Cargo Code.");
-            System.out.println("   Requirement: Must start with 'PET-' followed by exactly 2 uppercase letters.");
-        }
+        // Verify System Stability
+        System.out.println("\n" + "=".repeat(45));
+        System.out.println("FINAL TRAIN CONSIST STATUS:");
+        System.out.println(tankBogie.getStatus());
+        System.out.println(crateBogie.getStatus());
+        System.out.println("=".repeat(45));
+        System.out.println("System Status: Operational (No crashes detected).");
     }
 }
