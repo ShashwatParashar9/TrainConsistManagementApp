@@ -1,90 +1,73 @@
+import java.util.Arrays;
+
 /**
- * UC16: Manual Sorting Using Bubble Sort
- * This program demonstrates algorithmic thinking by sorting passenger bogie
- * capacities using a manual comparison-and-swap logic.
+ * UC17: Sorting Bogie Names Using Arrays.sort()
+ * This program demonstrates the transition from manual sorting algorithms
+ * to optimized built-in Java utility methods.
  */
-
-class PassengerBogie {
-    private String type;
-    private int capacity;
-
-    public PassengerBogie(String type, int capacity) {
-        this.type = type;
-        this.capacity = capacity;
-    }
-
-    public int getCapacity() {
-        return capacity;
-    }
-
-    @Override
-    public String toString() {
-        return type + " (" + capacity + ")";
-    }
-}
-
 public class TrainConsistManagementApp {
 
     public static void main(String[] args) {
-        System.out.println("=== Railway Consist Management System: UC16 ===");
+        System.out.println("=== Railway Consist Management System: UC17 ===");
 
-        // Step 1: Create an array of passenger bogie capacities
-        // Sample data mimicking various classes: Sleeper, AC, etc.
-        int[] capacities = {72, 56, 24, 70, 60};
+        // Step 1: Initialize an array of Bogie Type Names
+        // These represent different classes available in the train system.
+        String[] bogieNames = {
+                "Sleeper",
+                "AC Chair",
+                "First Class",
+                "General",
+                "Luxury"
+        };
 
-        System.out.print("Initial Capacities: ");
-        printArray(capacities);
+        // Display original state
+        System.out.println("\n[Original Consist Order]");
+        printBogieArray(bogieNames);
 
-        // Step 2: Execute Bubble Sort
-        bubbleSort(capacities);
+        // Step 2: Use Java's Built-in Arrays.sort()
+        // This performs an optimized natural order (alphabetical) sort.
+        Arrays.sort(bogieNames);
 
         // Step 3: Display Sorted Result
-        System.out.print("Sorted Capacities (Ascending): ");
-        printArray(capacities);
+        // We use Arrays.toString() for a clean, concise output.
+        System.out.println("\n[Sorted Consist Order (Alphabetical)]");
+        System.out.println(Arrays.toString(bogieNames));
 
-        // Final verification of program stability
-        System.out.println("\nSorting complete. System operational.");
+        // Testing specialized scenarios
+        runEdgeCaseTests();
+
+        System.out.println("\n" + "=".repeat(45));
+        System.out.println("System Status: Operational (Optimized Sort Applied).");
     }
 
     /**
-     * Implementation of the Bubble Sort Algorithm.
-     * Complexity: O(n²) - Ideal for educational understanding of nested loops.
+     * Helper method to simulate various test case scenarios
      */
-    public static void bubbleSort(int[] array) {
-        int n = array.length;
-        boolean swapped;
+    private static void runEdgeCaseTests() {
+        System.out.println("\n--- Running Operational Edge Case Tests ---");
 
-        // Outer loop: Number of passes
-        for (int i = 0; i < n - 1; i++) {
-            swapped = false;
+        // Test: Duplicate Names
+        String[] duplicates = {"Sleeper", "AC Chair", "Sleeper", "General"};
+        Arrays.sort(duplicates);
+        System.out.println("Duplicate Check: " + Arrays.toString(duplicates));
 
-            // Inner loop: Compare adjacent elements
-            // The largest element "bubbles" to the end with each pass
-            for (int j = 0; j < n - i - 1; j++) {
-                if (array[j] > array[j + 1]) {
+        // Test: Single Element
+        String[] single = {"Luxury"};
+        Arrays.sort(single);
+        System.out.println("Single Element Check: " + Arrays.toString(single));
 
-                    // SWAP LOGIC: Use a temporary variable to exchange positions
-                    int temp = array[j];
-                    array[j] = array[j + 1];
-                    array[j + 1] = temp;
-
-                    swapped = true;
-                }
-            }
-
-            // Optimization: If no two elements were swapped by inner loop, then break
-            if (!swapped) break;
-        }
+        // Test: Already Sorted
+        String[] sorted = {"AC Chair", "First Class", "General"};
+        Arrays.sort(sorted);
+        System.out.println("Pre-Sorted Check: " + Arrays.toString(sorted));
     }
 
     /**
-     * Utility method to print array contents
+     * Simple utility to print the array elements
      */
-    private static void printArray(int[] array) {
-        System.out.print("[ ");
+    private static void printBogieArray(String[] array) {
         for (int i = 0; i < array.length; i++) {
-            System.out.print(array[i] + (i < array.length - 1 ? ", " : " "));
+            System.out.println((i + 1) + ". " + array[i]);
         }
-        System.out.println("]");
     }
 }
